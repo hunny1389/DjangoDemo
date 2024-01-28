@@ -22,7 +22,7 @@ Step 4: To include the app in our project, we need to add a reference to its con
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-]
+          ]
 
 Step 5: Creating Models . Edit the todo/models.py file so it looks like this
 
@@ -57,11 +57,42 @@ Step 9: Make the todo app modifiable in the admin. we need to tell the admin tha
           from .models import Question          
           admin.site.register(Question)
 
-Step 10: This is optional. Change TIME_ZONE. Change the line in todo_site/settings.py to the below mentioned:
+Step 10: This is optional. Change TIME_ZONE to India timezone. Change the line in todo_site/settings.py to the below mentioned:
 
           TIME_ZONE = 'Asia/Kolkata'
 
-Step 11: 
+Step 11: use Django’s generic views instead. To do so, open the polls/views.py file and change it like so:
+
+          from django.http import HttpResponseRedirect
+          from django.shortcuts import get_object_or_404, render
+          from django.urls import reverse
+          from django.views import generic
           
+          from .models import Choice, Question
+          
+          
+          class IndexView(generic.ListView):
+              template_name = "polls/index.html"
+              context_object_name = "latest_question_list"
+          
+              def get_queryset(self):
+                  """Return the last five published questions."""
+                  return Question.objects.order_by("-pub_date")[:5]
+          
+          
+          class DetailView(generic.DetailView):
+              model = Question
+              template_name = "polls/detail.html"
+          
+          
+          class ResultsView(generic.DetailView):
+              model = Question
+              template_name = "polls/results.html"
+          
+          
+          def vote(request, question_id):
+              # same as above, no changes needed.
+              ...
+                    
 
           
